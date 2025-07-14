@@ -2083,7 +2083,7 @@
             </a>
         </div>
         <div class="powered-by">
-            Powered by <a href="https://wa.me/201156823048" target="_blank">Omar Mostafa</a>
+            Powered by <a href="https://wa.me/01156823048" target="_blank">Omar Mostafa</a>
         </div>
     </div>
     
@@ -3005,21 +3005,8 @@
             return;
         }
         
-        if (!currentUser) {
-            showNotification('Please sign in to complete your order');
-            loginModal.classList.add('active');
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            return;
-        }
-        
-        // If we have saved customer info, proceed directly to WhatsApp
-        if (customerInfo) {
-            sendWhatsAppMessage();
-        } else {
-            // Otherwise show the checkout form
-            openCheckoutForm();
-        }
+        // Always open checkout form for customer details
+        openCheckoutForm();
     }
 
     // Complete Checkout
