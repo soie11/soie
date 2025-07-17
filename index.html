@@ -1905,6 +1905,9 @@
                             <input type="checkbox" id="productHasOffer"> Has Offer
                         </label>
                         <label>
+                            Discount Percentage: <input type="number" id="productDiscount" min="0" max="100" value="0">%
+                        </label>
+                        <label>
                             <input type="checkbox" id="productSoldOut"> Sold Out
                         </label>
                     </div>
@@ -2191,6 +2194,7 @@
     const totalProductsElement = document.getElementById('totalProducts');
     const totalSalesElement = document.getElementById('totalSales');
     const totalOrdersElement = document.getElementById('totalOrders');
+    const productDiscount = document.getElementById('productDiscount');
 
     // Initialize Store
     function initStore() {
@@ -2534,7 +2538,7 @@
         productsGrid.innerHTML = filteredProducts.map(product => `
             <div class="product-card" data-id="${product.id}" data-category="${product.category}" 
                  data-bestseller="${product.isBestSeller}" data-offer="${product.hasOffer}">
-                ${product.hasOffer ? `<span class="product-badge">${Math.round((1 - (product.price / (product.oldPrice || product.price * 1.2))) * 100)}% OFF</span>` : ''}
+                ${product.hasOffer && product.discountPercentage ? `<span class="product-badge">${product.discountPercentage}% OFF</span>` : ''}
                 ${product.soldOut ? `<div class="sold-out-badge">SOLD OUT</div>` : ''}
                 <button class="wishlist-btn ${wishlist.includes(product.id) ? 'active' : ''}" data-id="${product.id}">
                     <i class="${wishlist.includes(product.id) ? 'fas' : 'far'} fa-heart"></i>
@@ -2555,7 +2559,7 @@
                 <div class="product-info">
                     <h3 class="product-title">${product.name}</h3>
                     <div class="product-price">
-                        ${product.hasOffer ? `<span class="old-price">${Math.round(product.price * 1.2)} EGP</span>` : ''}
+                        ${product.hasOffer && product.discountPercentage ? `<span class="old-price">${Math.round(product.price / (1 - product.discountPercentage / 100))} EGP</span>` : ''}
                         <span class="current-price">${product.price} EGP</span>
                     </div>
                     <button class="add-to-cart ${product.soldOut ? 'sold-out' : ''}" data-id="${product.id}" ${product.soldOut ? 'disabled' : ''}>
@@ -3128,6 +3132,7 @@
                     document.getElementById('productDescription').value = product.description || '';
                     document.getElementById('productBestSeller').checked = product.isBestSeller || false;
                     document.getElementById('productHasOffer').checked = product.hasOffer || false;
+                    document.getElementById('productDiscount').value = product.discountPercentage || 0;
                     document.getElementById('productSoldOut').checked = product.soldOut || false;
                     
                     // Display existing images
@@ -3187,6 +3192,7 @@
     async function saveProduct(productData) {
         try {
             const productId = document.getElementById('productId').value;
+            const discountPercentage = parseInt(document.getElementById('productDiscount').value) || 0;
             
             // Prepare product data
             const productToSave = {
@@ -3197,6 +3203,7 @@
                 images: productImages,
                 isBestSeller: productData.isBestSeller || false,
                 hasOffer: productData.hasOffer || false,
+                discountPercentage: discountPercentage,
                 soldOut: productData.soldOut || false
             };
             
@@ -3217,6 +3224,7 @@
             // Reset form
             productForm.reset();
             document.getElementById('productId').value = '';
+            document.getElementById('productDiscount').value = '0';
             imagePreviewContainer.innerHTML = '';
             productImages = [];
         } catch (error) {
